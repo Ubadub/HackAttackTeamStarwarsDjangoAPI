@@ -20,10 +20,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '1plo4-q3w2&=a1x78(z!d7nw!k$1kyh*2t5*+dl!8muq#g_3r_'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', False)
 
 ALLOWED_HOSTS = []
 
@@ -38,8 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'customauth',
-    'pin',
+    'rest_framework.authtoken',
+    'rest_auth',
+
+    'api',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -102,8 +105,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Custom User class
-AUTH_USER_MODEL = 'customauth.User'
+# Custom user model
+
+AUTH_USER_MODEL = 'users.CustomUser'
 
 
 # Internationalization
@@ -111,7 +115,7 @@ AUTH_USER_MODEL = 'customauth.User'
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/New_York'
 
 USE_I18N = True
 
@@ -124,15 +128,25 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
-# Django REST Framework settings
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'customauth.authentication.CustomAuthBackend',
         #'rest_framework.authentication.BasicAuthentication',
         #'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
 }
+
+# Twilio
+
+if DEBUG:
+    TWILIO_ACCOUNT_SECURITY_API_KEY = os.getenv('TWILIO_ACCOUNT_SECURITY_API_KEY_TEST')
+else:
+    TWILIO_ACCOUNT_SECURITY_API_KEY = os.getenv('TWILIO_ACCOUNT_SECURITY_API_KEY_REAL')
+
+TWILIO_US_COUNTRY_CODE = '1'
+TWILIO_TOKEN_LENGTH = 4
