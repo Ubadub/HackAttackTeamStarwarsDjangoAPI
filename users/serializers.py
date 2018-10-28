@@ -20,19 +20,19 @@ class LoginSerializer(serializers.Serializer):
 
         return user
 
-    def update(self, instance, validated_data):
-        """
-        Update and return an existing `CustomUser` instance, given the validated
-        data.
-        """
-        instance.first_name = validated_data.get('first_name', instance.first_name)
-        instance.last_name = validated_data.get('last_name', instance.first_name)
-        # TODO: re-verify if phone number is changed
-        instance.phone_number = validated_data.get('phone_number', instance.phone_number)
+    # def update(self, instance, validated_data):
+    #     """
+    #     Update and return an existing `CustomUser` instance, given the validated
+    #     data.
+    #     """
+    #     instance.first_name = validated_data.get('first_name', instance.first_name)
+    #     instance.last_name = validated_data.get('last_name', instance.first_name)
+    #     # TODO: re-verify if phone number is changed
+    #     instance.phone_number = validated_data.get('phone_number', instance.phone_number)
 
-        instance.save()
+    #     instance.save()
 
-        return instance
+    #     return instance
 
 class TokenSerializer(serializers.Serializer):
     phone_number = serializers.RegexField(PHONE_REGEX, max_length=17, allow_blank=False)

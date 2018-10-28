@@ -18,13 +18,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         regex=PHONE_REGEX,
         message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
 
-    phone_number = models.CharField(_('phone number'), unique=True, validators=[phone_regex], max_length=17, blank=False)
-    #email = models.EmailField(_('email address'), unique=True)
+    phone_number = models.CharField(_('phone number'), unique=True, validators=[phone_regex], max_length=17,
+        blank=False)
     first_name = models.CharField(_('first name'), max_length=50, blank=False)
     last_name = models.CharField(_('last name'), max_length=50, blank=False)
     date_joined = models.DateTimeField(_('date joined'), auto_now_add=True)
     is_active = models.BooleanField(_('active'), default=False)
-    emergency_contacts = models.ManyToManyField('CustomUser')
+    emergency_contacts = models.ManyToManyField('self', related_name='protectees', related_query_name='protectors')
     #avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     is_admin = models.BooleanField(default=False)
 

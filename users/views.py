@@ -9,17 +9,22 @@ from .serializers import *
 from django.http import Http404
 
 class EmergencyContactsListView(generics.ListCreateAPIView):
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAdminUser,)
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAdminUser,]
     queryset = models.CustomUser.objects.all()
     serializer_class = UserSerializer
 
 class LoginView(APIView):
     """
-    Given a phone number, creates a User with that phone number or begins the process of creating one.
+    Given a phone number, creates a `User` with that phone number, and then sends a text with a confirmation code.
+    The `User` is **NOT** active (i.e. they can't do anything) until they get an authorization token, which is done
+    via the next API endpoint.
     """
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+
     def post(self, request, format=None):
-        serializer = LoginSerializer(data=request.data, partial=True)
+        serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -28,8 +33,14 @@ class LoginView(APIView):
 
 class TokenView(APIView):
     """
-    Given a phone number, creates a User with that phone number or begins the process of creating one.
+    Given a phone number and four-digit verification token (sent via text message),
+    checks if the verification token is valid for the given phone number. If it is,
+    it activates the `User` account and returns an authentication token to be used
+    in all future API requests.
     """
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+
     def post(self, request, format=None):
         serializer = TokenSerializer(data=request.data, partial=True)
         if serializer.is_valid():
@@ -40,7 +51,8 @@ class TokenView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserListView(generics.ListCreateAPIView):
-    authentication_classes = (authentication.TokenAuthentication,)
+    http_method_names = ['get', 'options']
+    authentication_classes = [authentication.TokenAuthentication]
     permission_classes = (permissions.IsAdminUser,)
     queryset = models.CustomUser.objects.all()
     serializer_class = UserSerializer
