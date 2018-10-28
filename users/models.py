@@ -53,13 +53,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
         Presently uses the US' country code by default.
         """
-        if not settings.DEBUG:
-            get_authy_client().phones.verification_start(
-                self.phone_number,
-                country_code,
-                via=TWILIO_VIA_SMS
-                )
-        else:
+        get_authy_client().phones.verification_start(
+            self.phone_number,
+            country_code,
+            via=TWILIO_VIA_SMS
+            )
+        if settings.DEBUG:
             print("DEBUG MODE ON; NO VERIFICATION MESSAGE SENT")
 
     def validate_verification_text(self, token, country_code=settings.TWILIO_US_COUNTRY_CODE):
