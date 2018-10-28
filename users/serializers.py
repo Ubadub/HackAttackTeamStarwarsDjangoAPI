@@ -21,13 +21,14 @@ class LoginSerializer(serializers.Serializer):
         Creates a `CustomUser` with the given data and sends a confirmation text.
         """
         phone_number = validated_data['phone_number']
-        user, created = CustomUser.objects.get_or_create(phone_number=phone_number)
-        print(validated_data)
-        print(user)
-        if created:
+        user = None
+        try:
+            user = CustomUser.objects.get(phone_number=phone_number)
             user.invalidate_token()
+        except CustomUser.DoesNotExist as e:
+            user = CustomUser.objects.create(**validated_data)
+        
         user.send_verification_text()
-
         return user
 
 class TokenSerializer(serializers.Serializer):

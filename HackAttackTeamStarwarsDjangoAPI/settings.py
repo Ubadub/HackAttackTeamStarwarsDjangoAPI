@@ -23,12 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG') == 'True'
+DEBUG = False #os.getenv('DEBUG') == 'True'
 
-if DEBUG:
-    ALLOWED_HOSTS = ['127.0.0.1']
-else:
-    ALLOWED_HOSTS = ['starwarshackattack2018.pythonanywhere.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'starwarshackattack2018.pythonanywhere.com']
 
 
 # Application definition
