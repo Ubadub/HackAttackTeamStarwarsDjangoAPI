@@ -38,6 +38,15 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def is_staff(self):
         return self.is_admin
 
+    def invalidate_token(self):
+        """
+        Invalidates previous Tokens.
+        """
+        try:
+            self.auth_token.delete()
+        except Exception as e:
+            pass
+
     def send_verification_text(self, country_code=settings.TWILIO_US_COUNTRY_CODE):
         """
         Sends a verification text (if not in DEBUG mode).
@@ -63,7 +72,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         verification = None
 
         if not settings.DEBUG:
-            verification = authy_api.phones.verification_check(
+            verification = get_authy_client().phones.verification_check(
                 self.phone_number,
                 country_code,
                 token

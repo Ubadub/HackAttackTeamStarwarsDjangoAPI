@@ -8,11 +8,20 @@ from .serializers import *
 
 from django.http import Http404
 
-class EmergencyContactsListView(generics.ListCreateAPIView):
+class EmergencyContactsView(APIView):
     authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [permissions.IsAdminUser,]
+    permission_classes = [permissions.IsAuthenticated]
     queryset = models.CustomUser.objects.all()
     serializer_class = UserSerializer
+
+    def post(self, request, format=None):
+        serializer = TokenSerializer(data=request.data, partial=True)
+        if serializer.is_valid():
+            msg = serializer.save() # did the verification succeed?
+            print(msg)
+            print(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
     """

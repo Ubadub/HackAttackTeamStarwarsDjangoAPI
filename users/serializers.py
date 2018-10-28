@@ -6,6 +6,11 @@ from .models import CustomUser
 
 from users.models import PHONE_REGEX
 
+class EmergencyContactsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('phone_number', 'first_name', 'last_name')
+
 class LoginSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=50, allow_blank=False)
     last_name = serializers.CharField(max_length=50, allow_blank=False)
@@ -15,24 +20,12 @@ class LoginSerializer(serializers.Serializer):
         """
         Creates a `CustomUser` with the given data and sends a confirmation text.
         """
-        user = CustomUser.objects.create(**validated_data)
+        user, created = CustomUser.objects.get_or_create(**validated_data)
+        if created:
+            user.invalidate_token()
         user.send_verification_text()
 
         return user
-
-    # def update(self, instance, validated_data):
-    #     """
-    #     Update and return an existing `CustomUser` instance, given the validated
-    #     data.
-    #     """
-    #     instance.first_name = validated_data.get('first_name', instance.first_name)
-    #     instance.last_name = validated_data.get('last_name', instance.first_name)
-    #     # TODO: re-verify if phone number is changed
-    #     instance.phone_number = validated_data.get('phone_number', instance.phone_number)
-
-    #     instance.save()
-
-    #     return instance
 
 class TokenSerializer(serializers.Serializer):
     phone_number = serializers.RegexField(PHONE_REGEX, max_length=17, allow_blank=False)
