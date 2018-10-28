@@ -25,7 +25,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', False)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['starwarshackattack2018.pythonanywhere.com']
 
 
 # Application definition
@@ -143,10 +143,7 @@ REST_FRAMEWORK = {
 
 # Twilio
 
-if DEBUG:
-    TWILIO_ACCOUNT_SECURITY_API_KEY = os.getenv('TWILIO_ACCOUNT_SECURITY_API_KEY_TEST')
-else:
-    TWILIO_ACCOUNT_SECURITY_API_KEY = os.getenv('TWILIO_ACCOUNT_SECURITY_API_KEY_REAL')
+TWILIO_ACCOUNT_SECURITY_API_KEY = os.getenv('TWILIO_ACCOUNT_SECURITY_API_KEY')
 
 TWILIO_US_COUNTRY_CODE = '1'
 TWILIO_TOKEN_LENGTH = 4
